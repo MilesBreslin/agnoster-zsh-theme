@@ -66,26 +66,17 @@ prompt_end() {
   CURRENT_BG=''
 }
 
-### Prompt components
-# Each component will draw itself, and hide itself if no information needs to be shown
-
-# Context: user@hostname (who am I and where am I)
-prompt_context() {
-  local user=`whoami`
-
-  if [[ "$user" != "$DEFAULT_USER" || -n "$SSH_CONNECTION" ]]; then
-    prompt_segment $PRIMARY_FG default " %(!.%{%F{yellow}%}.)$user@%m "
-  fi
-}
 
 # Git: branch/detached head, dirty status
-prompt_git() {
+prompt_dir() {
   local color ref
   is_dirty() {
     test -n "$(git status --porcelain --ignore-submodules)"
   }
+  [[ $RETVAL -ne 0 ]] && color=blue || color=red
   ref="$vcs_info_msg_0_"
   if [[ -n "$ref" ]]; then
+  	prompt_segment $color $PRIMARY_FG ' %d '
     if is_dirty; then
       color=yellow
       ref="${ref} $PLUSMINUS"
@@ -100,27 +91,13 @@ prompt_git() {
     fi
     prompt_segment $color $PRIMARY_FG
     print -n " $ref"
+  elif (( $COLUMNS < 70  )); then
+  	prompt_segment $color $PRIMARY_FG ' %d '
+  else
+  	prompt_segment $color $PRIMARY_FG ' %~ '
   fi
 }
 
-# Dir: current working directory
-prompt_dir() {
-  prompt_segment blue $PRIMARY_FG ' %~ '
-}
-
-# Status:
-# - was there an error
-# - am I root
-# - are there background jobs?
-prompt_status() {
-  local symbols
-  symbols=()
-  [[ $RETVAL -ne 0 ]] && symbols+="%{%F{red}%}$CROSS"
-  [[ $UID -eq 0 ]] && symbols+="%{%F{yellow}%}$LIGHTNING"
-  [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="%{%F{cyan}%}$GEAR"
-
-  [[ -n "$symbols" ]] && prompt_segment $PRIMARY_FG default " $symbols "
-}
 
 # Display current virtual environment
 prompt_virtualenv() {
@@ -135,11 +112,8 @@ prompt_virtualenv() {
 prompt_agnoster_main() {
   RETVAL=$?
   CURRENT_BG='NONE'
-  prompt_status
-  prompt_context
   prompt_virtualenv
   prompt_dir
-  prompt_git
   prompt_end
 }
 
