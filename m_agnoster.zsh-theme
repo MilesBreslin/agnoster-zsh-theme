@@ -73,7 +73,8 @@ prompt_dir() {
   is_dirty() {
     test -n "$(git status --porcelain --ignore-submodules)"
   }
-  [[ $RETVAL -ne 0 ]] && color=red || color=blue
+  [[ $EUID -ne 0 ]] && color=blue || color=white
+  [[ $RETVAL -ne 0 ]] && color=red 
   ref="$vcs_info_msg_0_"
   if [[ -n "$ref" ]]; then
   	prompt_segment $color $PRIMARY_FG ' %1~ '
@@ -91,10 +92,10 @@ prompt_dir() {
     fi
     prompt_segment $color $PRIMARY_FG
     print -n " $ref"
-  elif (( $COLUMNS < 80  )); then
-  	prompt_segment $color $PRIMARY_FG ' %1~ '
-  else
+  elif (( $COLUMNS > 80  )); then
   	prompt_segment $color $PRIMARY_FG ' %~ '
+  else
+  	prompt_segment $color $PRIMARY_FG ' %1~ '
   fi
 }
 

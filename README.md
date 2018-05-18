@@ -1,4 +1,4 @@
-# agnoster.zsh-theme
+# m_agnoster.zsh-theme
 
 A ZSH theme optimized for people who use:
 
@@ -25,6 +25,7 @@ To test if your terminal and font support it, check that all the necessary chara
   - Current branch / SHA1 in detached head state
   - Dirty working directory (±, color change)
 - Working directory
+  - If is a small window or a git repo, only show top level
 - Elevated (root) privileges (⚡)
 
 ![Screenshot](https://gist.githubusercontent.com/agnoster/3712874/raw/screenshot.png)
