@@ -73,7 +73,11 @@ prompt_dir() {
   is_dirty() {
     test -n "$(git status --porcelain --ignore-submodules)"
   }
-  [[ $EUID -ne 0 ]] && color=blue || color=white
+  if [[ -v SSH_CONNECTION ]]; then
+    [[ $EUID -ne 0 ]] && color=magenta || color=yellow
+  else
+    [[ $EUID -ne 0 ]] && color=blue || color=white
+  fi
   [[ $RETVAL -ne 0 ]] && color=red 
   ref="$vcs_info_msg_0_"
   if [[ -n "$ref" ]]; then
